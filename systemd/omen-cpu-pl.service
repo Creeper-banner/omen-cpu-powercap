@@ -1,0 +1,12 @@
+[Unit]
+Description=HP OMEN CPU power limit: apply PL1/PL2 at boot
+After=multi-user.target
+
+[Service]
+Type=oneshot
+RemainAfterExit=yes
+# @PL1@ @PL2@ = AC 下的目标瓦数；--clamp 补回内核 powercap 写路径丢掉的强制执行位
+ExecStart=/usr/local/bin/omen-pl.sh set @PL1@ @PL2@ --clamp
+
+[Install]
+WantedBy=multi-user.target

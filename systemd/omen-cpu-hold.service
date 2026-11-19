@@ -1,0 +1,26 @@
+[Unit]
+Description=HP OMEN CPU 性能档保持（EC 的 ~95s 倒计时会撤销档位，这里定期重申）
+Documentation=https://github.com/ (本地) README.md「第 6/7 轮」
+# 模块要先能加载；hpraw.sh load 会自己 insmod 并带 allow_write=1
+After=multi-user.target
+# 脚本在 /mnt/sub 上：等它挂好再起（否则 insmod 会找不到 .ko）
+RequiresMountsFor=@SRC@
+# 睡眠唤醒后 EC 可能把档位打回 0 —— 不需要 hook：hold 的 10s 轮询自己会补上
+
+[Service]
+Type=simple
+# @PROFILE@ 默认 1 = 90/130/200；@INTERVAL@ 秒查一次 HPCM（倒计时 ~95s，10s 留足余量）
+# 注意 sudo 会丢环境变量，所以这里直接以 root 跑，不需要 sudo
+ExecStartPre=-/bin/bash @SRC@/scripts/hpraw.sh unload
+ExecStartPre=/bin/bash @SRC@/scripts/hpraw.sh load 1
+# RAPL 是易失的（重启回出厂 PL1=55W，会把 EC 的 90W 削成 55W）→ 每次启动补一遍。
+# --clamp 补回 powercap 写路径丢掉的强制执行位（否则写入不生效）。
+# 实测：稳态 = min(EC 的 EL1R, PL1)；boost = min(EC 的 EL2R, PL2)。
+ExecStartPre=/bin/bash @SRC@/scripts/pl.sh set @PL1@ @PL2@ --clamp
+ExecStart=/bin/bash @SRC@/scripts/hpraw.sh hold @PROFILE@ 0 @INTERVAL@
+# hold 是无限循环；异常退出就重来（模块被卸载/内核更新后也能恢复）
+Restart=always
+RestartSec=10
+
+[Install]
+WantedBy=multi-user.target
