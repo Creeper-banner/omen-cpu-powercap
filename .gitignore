@@ -1,2 +1,7 @@
 HANDOFF.md
 acpi/
+
+# Kernel mod build artifacts
+*.o
+*.cmd
+*.ko

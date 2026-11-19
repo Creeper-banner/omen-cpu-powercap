@@ -1,1 +1,0 @@
-savedcmd_hp_raw.ko := ld -r -m elf_x86_64 -z noexecstack --no-warn-rwx-segments --build-id=sha1 --force-group-allocation  -T /usr/src/kernels/7.3.4-300.fc45.x86_64/scripts/module.lds -o hp_raw.ko hp_raw.o hp_raw.mod.o .module-common.o

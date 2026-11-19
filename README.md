@@ -25,7 +25,7 @@
 
 ## 使用方法
 
-1. 加载 `hp_raw` 内核模块（似乎 Systemd 服务包含此内容）：`sudo bash scripts/hpraw.sh load 1`
+1. 构建并加载 `hp_raw` 内核模块（似乎 Systemd 服务包含此内容）：`sudo bash scripts/hpraw.sh build` +  `sudo bash scripts/hpraw.sh load 1`
 2. 安装服务：`sudo scripts/install-hold.sh 1 10 [PL1] [PL2]`
   - 参数说明：
     - `1` -> EC 性能模式，保持 1；
@@ -34,6 +34,8 @@
 3. 启动服务：`systemctl enable omen-cpu-hold`
 
 烤机脚本基本使用方法：`sudo scripts/loadtest.sh [烤机时间]`。
+
+> 更新系统内核后可能需要重新构建并加载 `hp_raw` 内核模块。若出现问题请尝试重新运行 `hpraw.sh` 并运行 `systemctl restart omen-cpu-hold`。
 
 ## 其他
 
